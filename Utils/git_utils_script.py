@@ -5,7 +5,7 @@ import subprocess
 import argparse
 import shutil
 
-def git_push_file(filename, source_dir, git_repo_path):
+def git_push_file(filename, source_dir, git_repo_path, target_subdir=None):
     """
     Push a specific file to git repository
     
@@ -13,6 +13,7 @@ def git_push_file(filename, source_dir, git_repo_path):
         filename: Name of the file to commit
         source_dir: Source directory where the file is located
         git_repo_path: Path to the git repository
+        target_subdir: Optional subdirectory within the git repo (e.g., 'Utils')
     """
     try:
         # Get full path of the file
@@ -31,13 +32,23 @@ def git_push_file(filename, source_dir, git_repo_path):
         # Change to git repository directory
         os.chdir(git_repo_path)
         
-        # Copy file to git repo if source_dir is different
-        if os.path.abspath(source_dir) != os.path.abspath(git_repo_path):
+        # Determine the destination path
+        if target_subdir:
+            # Ensure target subdirectory exists
+            target_dir = os.path.join(git_repo_path, target_subdir)
+            os.makedirs(target_dir, exist_ok=True)
+            dest_path = os.path.join(target_dir, filename)
+            relative_path = os.path.join(target_subdir, filename).replace('\\', '/')
+        else:
             dest_path = os.path.join(git_repo_path, filename)
-            shutil.copy2(file_path, dest_path)
+            relative_path = filename
+        
+        # Copy file to destination
+        shutil.copy2(file_path, dest_path)
+        print(f"Copied '{file_path}' to '{dest_path}'")
         
         # Git add
-        subprocess.run(['git', 'add', filename], check=True)
+        subprocess.run(['git', 'add', relative_path], check=True)
         
         # Git commit
         commit_message = f"Update {filename}"
@@ -56,18 +67,145 @@ def git_push_file(filename, source_dir, git_repo_path):
         print(f"Error: {e}")
         return False
 
+def git_delete_file(filename, git_repo_path, target_subdir=None):
+    """
+    Delete a specific file from git repository and commit the changes
+    
+    Args:
+        filename: Name of the file to delete
+        git_repo_path: Path to the git repository
+        target_subdir: Optional subdirectory within the git repo (e.g., 'Utils')
+    """
+    try:
+        # Check if git repo exists
+        if not os.path.exists(git_repo_path):
+            print(f"Error: Git repository '{git_repo_path}' does not exist")
+            return False
+        
+        # Change to git repository directory
+        os.chdir(git_repo_path)
+        
+        # Determine the file path
+        if target_subdir:
+            file_path = os.path.join(git_repo_path, target_subdir, filename)
+            relative_path = os.path.join(target_subdir, filename).replace('\\', '/')
+        else:
+            file_path = os.path.join(git_repo_path, filename)
+            relative_path = filename
+        
+        # Check if file exists
+        if not os.path.exists(file_path):
+            print(f"Error: File '{file_path}' does not exist in the repository")
+            return False
+        
+        # Delete the file
+        os.remove(file_path)
+        print(f"Deleted file: '{file_path}'")
+        
+        # Git add (stage the deletion)
+        subprocess.run(['git', 'add', relative_path], check=True)
+        
+        # Git commit
+        commit_message = f"Delete {filename}"
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        
+        # Git push
+        subprocess.run(['git', 'push'], check=True)
+        
+        print(f"Successfully deleted '{filename}' and pushed changes to git repository")
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"Git command failed: {e}")
+        return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
+def git_clone_or_pull(repo_url, local_path):
+    """
+    Clone or pull a git repository to a local path
+    
+    Args:
+        repo_url: URL of the git repository (e.g., https://github.com/user/repo.git)
+        local_path: Local path where to clone/pull the repository
+    """
+    try:
+        # Check if the directory exists and is a git repo
+        if os.path.exists(os.path.join(local_path, '.git')):
+            print(f"Repository already exists at '{local_path}'. Pulling latest changes...")
+            os.chdir(local_path)
+            
+            # Check if remote exists, add if not
+            result = subprocess.run(['git', 'remote', '-v'], capture_output=True, text=True)
+            if 'origin' not in result.stdout:
+                print("Adding remote origin...")
+                subprocess.run(['git', 'remote', 'add', 'origin', repo_url], check=True)
+            
+            # Fetch and pull
+            subprocess.run(['git', 'fetch', 'origin'], check=True)
+            subprocess.run(['git', 'checkout', 'master'], check=True)
+            subprocess.run(['git', 'pull', 'origin', 'master'], check=True)
+            print("Successfully pulled latest changes")
+        else:
+            # Create parent directory if it doesn't exist
+            parent_dir = os.path.dirname(local_path)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
+            
+            print(f"Cloning repository from '{repo_url}' to '{local_path}'...")
+            subprocess.run(['git', 'clone', repo_url, local_path], check=True)
+            print(f"Successfully cloned repository to '{local_path}'")
+        
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"Git command failed: {e}")
+        return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
 def main():
     parser = argparse.ArgumentParser(
-        description='Git Utility: Push a file to git repository',
-        epilog='Example: python git_utils_script.py --filename myfile.txt --source_dir /source/dir --git_path /path/to/repo'
+        description='Git Utility: Push files to git repository, clone/pull repositories, or delete files',
+        epilog='Examples:\n'
+               '  Push: python git_utils_script.py push --filename myfile.txt --source_dir /source --git_path /repo --target_subdir Utils\n'
+               '  Clone: python git_utils_script.py clone --repo_url https://github.com/user/repo.git --local_path /path/to/clone\n'
+               '  Delete: python git_utils_script.py delete --filename myfile.txt --git_path /repo --target_subdir Utils',
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument('--filename', required=True, help='Name of the file to commit')
-    parser.add_argument('--source_dir', required=True, help='Source directory containing the file')
-    parser.add_argument('--git_path', required=True, help='Path to the git repository')
+    
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
+    
+    # Push command
+    push_parser = subparsers.add_parser('push', help='Push a file to git repository')
+    push_parser.add_argument('--filename', required=True, help='Name of the file to commit')
+    push_parser.add_argument('--source_dir', required=True, help='Source directory containing the file')
+    push_parser.add_argument('--git_path', required=True, help='Path to the local git repository')
+    push_parser.add_argument('--target_subdir', help='Target subdirectory within the git repository (e.g., Utils)')
+    
+    # Clone command
+    clone_parser = subparsers.add_parser('clone', help='Clone or pull a git repository')
+    clone_parser.add_argument('--repo_url', required=True, help='URL of the git repository (e.g., https://github.com/user/repo.git)')
+    clone_parser.add_argument('--local_path', required=True, help='Local path where to clone/pull the repository')
+    
+    # Delete command
+    delete_parser = subparsers.add_parser('delete', help='Delete a file from git repository')
+    delete_parser.add_argument('--filename', required=True, help='Name of the file to delete')
+    delete_parser.add_argument('--git_path', required=True, help='Path to the local git repository')
+    delete_parser.add_argument('--target_subdir', help='Target subdirectory within the git repository (e.g., Utils)')
     
     args = parser.parse_args()
     
-    git_push_file(args.filename, args.source_dir, args.git_path)
+    if args.command == 'push':
+        git_push_file(args.filename, args.source_dir, args.git_path, args.target_subdir)
+    elif args.command == 'clone':
+        git_clone_or_pull(args.repo_url, args.local_path)
+    elif args.command == 'delete':
+        git_delete_file(args.filename, args.git_path, args.target_subdir)
+    else:
+        parser.print_help()
 
 if __name__ == '__main__':
     main()
