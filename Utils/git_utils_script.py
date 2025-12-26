@@ -122,6 +122,59 @@ def git_delete_file(filename, git_repo_path, target_subdir=None):
         print(f"Error: {e}")
         return False
 
+def git_sync_file(filename, git_repo_path, target_subdir=None):
+    """
+    Sync a file in the git repository and commit changes
+    
+    Args:
+        filename: Name of the file to sync (already in repo)
+        git_repo_path: Path to the git repository
+        target_subdir: Optional subdirectory within the git repo (e.g., 'Utils')
+    """
+    try:
+        # Check if git repo exists
+        if not os.path.exists(git_repo_path):
+            print(f"Error: Git repository '{git_repo_path}' does not exist")
+            return False
+        
+        # Change to git repository directory
+        os.chdir(git_repo_path)
+        
+        # Determine the file path
+        if target_subdir:
+            file_path = os.path.join(git_repo_path, target_subdir, filename)
+            relative_path = os.path.join(target_subdir, filename).replace('\\', '/')
+        else:
+            file_path = os.path.join(git_repo_path, filename)
+            relative_path = filename
+        
+        # Check if file exists
+        if not os.path.exists(file_path):
+            print(f"Error: File '{file_path}' does not exist in the repository")
+            return False
+        
+        print(f"Syncing file: '{file_path}'")
+        
+        # Git add (stage the file)
+        subprocess.run(['git', 'add', relative_path], check=True)
+        
+        # Git commit
+        commit_message = f"Sync {filename}"
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        
+        # Git push
+        subprocess.run(['git', 'push'], check=True)
+        
+        print(f"Successfully synced '{filename}' and pushed changes to git repository")
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"Git command failed: {e}")
+        return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
 def git_clone_or_pull(repo_url, local_path):
     """
     Clone or pull a git repository to a local path
@@ -168,11 +221,12 @@ def git_clone_or_pull(repo_url, local_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Git Utility: Push files to git repository, clone/pull repositories, or delete files',
+        description='Git Utility: Push files to git repository, clone/pull repositories, delete files, or sync files',
         epilog='Examples:\n'
                '  Push: python git_utils_script.py push --filename myfile.txt --source_dir /source --git_path /repo --target_subdir Utils\n'
                '  Clone: python git_utils_script.py clone --repo_url https://github.com/user/repo.git --local_path /path/to/clone\n'
-               '  Delete: python git_utils_script.py delete --filename myfile.txt --git_path /repo --target_subdir Utils',
+               '  Delete: python git_utils_script.py delete --filename myfile.txt --git_path /repo --target_subdir Utils\n'
+               '  Sync: python git_utils_script.py sync --filename myfile.txt --git_path /repo --target_subdir Utils',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
@@ -196,6 +250,12 @@ def main():
     delete_parser.add_argument('--git_path', required=True, help='Path to the local git repository')
     delete_parser.add_argument('--target_subdir', help='Target subdirectory within the git repository (e.g., Utils)')
     
+    # Sync command
+    sync_parser = subparsers.add_parser('sync', help='Sync a file in git repository (commit and push changes)')
+    sync_parser.add_argument('--filename', required=True, help='Name of the file to sync')
+    sync_parser.add_argument('--git_path', required=True, help='Path to the local git repository')
+    sync_parser.add_argument('--target_subdir', help='Target subdirectory within the git repository (e.g., Utils)')
+    
     args = parser.parse_args()
     
     if args.command == 'push':
@@ -204,6 +264,8 @@ def main():
         git_clone_or_pull(args.repo_url, args.local_path)
     elif args.command == 'delete':
         git_delete_file(args.filename, args.git_path, args.target_subdir)
+    elif args.command == 'sync':
+        git_sync_file(args.filename, args.git_path, args.target_subdir)
     else:
         parser.print_help()
 
