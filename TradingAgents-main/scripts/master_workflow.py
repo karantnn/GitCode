@@ -27,8 +27,10 @@ class AnalysisOrchestrator:
         self.results_dir = self.project_root / "results" / self.ticker / self.date
         self.reports_dir = self.results_dir / "reports"
         self.json_files = []
+        self.new_json_files = []  # Track only new files from current run
         self.word_files = []
         self.start_time = None
+        self.existing_json_files = set()  # Track existing files before run
         
         # Force UTF-8 output
         os.environ['PYTHONIOENCODING'] = 'utf-8'
@@ -105,6 +107,12 @@ class AnalysisOrchestrator:
         self.log_info(f"Ticker: {self.ticker} | Date: {self.date}")
         self.log_info(f"Agents to run: {', '.join(self.agents)}\n")
         
+        # Track existing JSON files before running agents
+        if self.results_dir.exists():
+            self.existing_json_files = set(self.results_dir.glob("*.json"))
+            if self.existing_json_files:
+                self.log_info(f"Found {len(self.existing_json_files)} existing JSON file(s) (will be excluded from combined analysis)")
+        
         failed_agents = []
         
         for i, agent in enumerate(self.agents, 1):
@@ -153,7 +161,7 @@ class AnalysisOrchestrator:
         return len(failed_agents) < len(self.agents)
     
     def discover_json_files(self) -> bool:
-        """Discover generated JSON files"""
+        """Discover generated JSON files from current run only"""
         self.log_section("DISCOVERING JSON FILES")
         
         if not self.results_dir.exists():
@@ -161,95 +169,123 @@ class AnalysisOrchestrator:
             return False
         
         # Find all JSON files for this date
-        self.json_files = sorted(self.results_dir.glob("*.json"))
+        all_json_files = set(self.results_dir.glob("*.json"))
         
-        if not self.json_files:
-            self.log_warning(f"No JSON files found in {self.results_dir}")
+        # Filter to only new files created during this run
+        self.new_json_files = sorted(all_json_files - self.existing_json_files)
+        self.json_files = self.new_json_files  # Keep for backward compatibility
+        
+        if not self.new_json_files:
+            self.log_warning(f"No new JSON files found in {self.results_dir}")
+            if self.existing_json_files:
+                self.log_info(f"(Ignoring {len(self.existing_json_files)} existing file(s) from previous runs)")
             return False
         
-        self.log_success(f"Found {len(self.json_files)} JSON file(s)")
-        for json_file in self.json_files:
+        self.log_success(f"Found {len(self.new_json_files)} NEW JSON file(s) from current run")
+        for json_file in self.new_json_files:
             file_size = json_file.stat().st_size
             self.log_info(f"  {json_file.name} ({file_size:,} bytes)")
+        
+        if self.existing_json_files:
+            self.log_info(f"\nExcluded {len(self.existing_json_files)} old file(s) from previous runs")
         
         return True
     
     def convert_to_word(self) -> bool:
-        """Convert JSON files to Word documents"""
+        """Convert JSON files to Word documents (only new files from current run)"""
         self.log_section("CONVERTING TO WORD DOCUMENTS")
         
         # Create reports directory
         self.reports_dir.mkdir(parents=True, exist_ok=True)
         self.log_info(f"Reports directory: {self.reports_dir}\n")
         
-        # Convert individual files
-        self.log_step(1, "Converting individual JSON files...")
-        
-        cmd = [
-            sys.executable,
-            str(self.project_root / "scripts" / "json_to_word.py"),
-            str(self.results_dir),
-            "-b",
-            "-o", str(self.reports_dir)
-        ]
+        # Create temporary directory with only new JSON files for conversion
+        temp_dir = self.results_dir / ".temp_current_run"
+        temp_dir.mkdir(exist_ok=True)
         
         try:
-            result = subprocess.run(
-                cmd,
-                cwd=self.project_root,
-                capture_output=True,
-                text=True,
-                timeout=60,
-                encoding="utf-8",
-                errors="replace"
-            )
+            # Copy only new JSON files to temp directory
+            for json_file in self.new_json_files:
+                import shutil
+                shutil.copy2(json_file, temp_dir / json_file.name)
             
-            if result.returncode == 0:
-                docx_files = [f for f in self.reports_dir.glob("*.docx") 
-                             if f.name != "Combined_Analysis.docx"]
-                self.log_success(f"Converted {len(docx_files)} file(s) to Word")
-                self.word_files.extend(docx_files)
-            else:
-                self.log_error(f"Conversion failed: {result.stderr[:200]}")
+            self.log_info(f"Prepared {len(self.new_json_files)} file(s) for conversion\n")
+            
+            # Convert individual files
+            self.log_step(1, "Converting individual JSON files...")
+            
+            cmd = [
+                sys.executable,
+                str(self.project_root / "scripts" / "json_to_word.py"),
+                str(temp_dir),
+                "-b",
+                "-o", str(self.reports_dir)
+            ]
+            
+            try:
+                result = subprocess.run(
+                    cmd,
+                    cwd=self.project_root,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    encoding="utf-8",
+                    errors="replace"
+                )
+                
+                if result.returncode == 0:
+                    docx_files = [f for f in self.reports_dir.glob("*.docx") 
+                                 if f.name != "Combined_Analysis.docx"]
+                    self.log_success(f"Converted {len(docx_files)} file(s) to Word")
+                    self.word_files.extend(docx_files)
+                else:
+                    self.log_error(f"Conversion failed: {result.stderr[:200]}")
+                    return False
+            
+            except Exception as e:
+                self.log_error(f"Conversion error: {str(e)}")
                 return False
-        
-        except Exception as e:
-            self.log_error(f"Conversion error: {str(e)}")
-            return False
-        
-        # Create combined document
-        self.log_step(2, "Creating combined document...")
-        
-        cmd_combined = [
-            sys.executable,
-            str(self.project_root / "scripts" / "json_to_word.py"),
-            str(self.results_dir),
-            "-b", "-c",
-            "-o", str(self.reports_dir)
-        ]
-        
-        try:
-            result = subprocess.run(
-                cmd_combined,
-                cwd=self.project_root,
-                capture_output=True,
-                text=True,
-                timeout=60,
-                encoding="utf-8",
-                errors="replace"
-            )
             
-            if result.returncode == 0:
-                combined = self.reports_dir / "Combined_Analysis.docx"
-                if combined.exists():
-                    size_kb = combined.stat().st_size / 1024
-                    self.log_success(f"Created combined document ({size_kb:.1f} KB)")
-                    self.word_files.append(combined)
-            else:
-                self.log_warning(f"Combined document creation failed")
-        
-        except Exception as e:
-            self.log_warning(f"Combined document error: {str(e)}")
+            # Create combined document (only from current run)
+            self.log_step(2, "Creating combined document from current run...")
+            
+            cmd_combined = [
+                sys.executable,
+                str(self.project_root / "scripts" / "json_to_word.py"),
+                str(temp_dir),
+                "-b", "-c",
+                "-o", str(self.reports_dir)
+            ]
+            
+            try:
+                result = subprocess.run(
+                    cmd_combined,
+                    cwd=self.project_root,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    encoding="utf-8",
+                    errors="replace"
+                )
+                
+                if result.returncode == 0:
+                    combined = self.reports_dir / "Combined_Analysis.docx"
+                    if combined.exists():
+                        size_kb = combined.stat().st_size / 1024
+                        self.log_success(f"Created combined document ({size_kb:.1f} KB)")
+                        self.word_files.append(combined)
+                else:
+                    self.log_warning(f"Combined document creation failed")
+            
+            except Exception as e:
+                self.log_warning(f"Combined document error: {str(e)}")
+            
+        finally:
+            # Clean up temporary directory
+            import shutil
+            if temp_dir.exists():
+                shutil.rmtree(temp_dir)
+                self.log_info("\nCleaned up temporary files")
         
         return len(self.word_files) > 0
     
