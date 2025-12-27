@@ -67,6 +67,61 @@ def git_push_file(filename, source_dir, git_repo_path, target_subdir=None):
         print(f"Error: {e}")
         return False
 
+def git_create_and_push(filename, content, git_repo_path, target_subdir=None):
+    """
+    Create a new file with content and push to git repository
+    
+    Args:
+        filename: Name of the file to create
+        content: Content to write to the file
+        git_repo_path: Path to the git repository
+        target_subdir: Optional subdirectory within the git repo (e.g., 'Utils')
+    """
+    try:
+        # Check if git repo exists
+        if not os.path.exists(git_repo_path):
+            print(f"Error: Git repository '{git_repo_path}' does not exist")
+            return False
+        
+        # Change to git repository directory
+        os.chdir(git_repo_path)
+        
+        # Determine the destination path
+        if target_subdir:
+            # Ensure target subdirectory exists
+            target_dir = os.path.join(git_repo_path, target_subdir)
+            os.makedirs(target_dir, exist_ok=True)
+            file_path = os.path.join(target_dir, filename)
+            relative_path = os.path.join(target_subdir, filename).replace('\\', '/')
+        else:
+            file_path = os.path.join(git_repo_path, filename)
+            relative_path = filename
+        
+        # Create the file with content
+        with open(file_path, 'w', encoding='utf-8') as f:
+            f.write(content)
+        print(f"Created file: '{file_path}'")
+        
+        # Git add
+        subprocess.run(['git', 'add', relative_path], check=True)
+        
+        # Git commit
+        commit_message = f"Add {filename}"
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        
+        # Git push
+        subprocess.run(['git', 'push'], check=True)
+        
+        print(f"Successfully created and pushed '{filename}' to git repository")
+        return True
+        
+    except subprocess.CalledProcessError as e:
+        print(f"Git command failed: {e}")
+        return False
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
 def git_delete_file(filename, git_repo_path, target_subdir=None):
     """
     Delete a specific file from git repository and commit the changes
@@ -227,9 +282,10 @@ def git_clone_or_pull(repo_url, local_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Git Utility: Push files to git repository, clone/pull repositories, delete files, or sync files',
+        description='Git Utility: Push, create, delete, sync files or clone/pull repositories',
         epilog='Examples:\n'
                '  Push: python git_utils_script.py push --filename myfile.txt --source_dir /source --git_path /repo --target_subdir Utils\n'
+               '  Create: python git_utils_script.py create --filename newfile.txt --content "Hello World" --git_path /repo --target_subdir Utils\n'
                '  Clone: python git_utils_script.py clone --repo_url https://github.com/user/repo.git --local_path /path/to/clone\n'
                '  Delete: python git_utils_script.py delete --filename myfile.txt --git_path /repo --target_subdir Utils\n'
                '  Sync: python git_utils_script.py sync --filename myfile.txt --git_path /repo --target_subdir Utils',
@@ -244,6 +300,13 @@ def main():
     push_parser.add_argument('--source_dir', required=True, help='Source directory containing the file')
     push_parser.add_argument('--git_path', required=True, help='Path to the local git repository')
     push_parser.add_argument('--target_subdir', help='Target subdirectory within the git repository (e.g., Utils)')
+    
+    # Create command
+    create_parser = subparsers.add_parser('create', help='Create a new file and push to git repository')
+    create_parser.add_argument('--filename', required=True, help='Name of the file to create')
+    create_parser.add_argument('--content', required=True, help='Content to write to the file')
+    create_parser.add_argument('--git_path', required=True, help='Path to the local git repository')
+    create_parser.add_argument('--target_subdir', help='Target subdirectory within the git repository (e.g., Utils)')
     
     # Clone command
     clone_parser = subparsers.add_parser('clone', help='Clone or pull a git repository')
@@ -266,6 +329,8 @@ def main():
     
     if args.command == 'push':
         git_push_file(args.filename, args.source_dir, args.git_path, args.target_subdir)
+    elif args.command == 'create':
+        git_create_and_push(args.filename, args.content, args.git_path, args.target_subdir)
     elif args.command == 'clone':
         git_clone_or_pull(args.repo_url, args.local_path)
     elif args.command == 'delete':
