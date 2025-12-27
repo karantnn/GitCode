@@ -158,6 +158,12 @@ def git_sync_file(filename, git_repo_path, target_subdir=None):
         # Git add (stage the file)
         subprocess.run(['git', 'add', relative_path], check=True)
         
+        # Check if there are changes to commit
+        result = subprocess.run(['git', 'diff', '--cached', '--quiet', relative_path], capture_output=True)
+        if result.returncode == 0:
+            print(f"No changes to sync for '{filename}' - file is already up to date")
+            return True
+        
         # Git commit
         commit_message = f"Sync {filename}"
         subprocess.run(['git', 'commit', '-m', commit_message], check=True)
