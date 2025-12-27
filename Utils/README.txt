@@ -40,6 +40,9 @@ COMMANDS:
    
    Example (nested folder):
    python git_utils_script.py push-folder --source_folder "C:\temp\data" --dest_folder "project\data" --git_path "C:\Users\nkara\Downloads\GitCode"
+   
+   Example (TradingAgents-main):
+   python git_utils_script.py push-folder --source_folder "C:\Users\nkara\Downloads\GitCode\TradingAgents-main" --dest_folder "TradingAgents-main" --git_path "C:\Users\nkara\Downloads\GitCode"
 
 
 3. CREATE NEW FILE AND PUSH TO REPOSITORY
@@ -104,6 +107,7 @@ QUICK REFERENCE:
 ----------------
 Push to Utils:     python git_utils_script.py push --filename "file.txt" --source_dir "C:\source" --git_path "C:\path\to\repo" --target_subdir "Utils"
 Push Folder:       python git_utils_script.py push-folder --source_folder "C:\my\folder" --dest_folder "Utils" --git_path "C:\Users\nkara\Downloads\GitCode"
+Push TradingAgents:python git_utils_script.py push-folder --source_folder "C:\Users\nkara\Downloads\GitCode\TradingAgents-main" --dest_folder "TradingAgents-main" --git_path "C:\Users\nkara\Downloads\GitCode"
 Create new file:   python git_utils_script.py create --filename "newfile.txt" --content "File content here" --git_path "C:\Users\nkara\Downloads\GitCode" --target_subdir "Utils"
 Update GitFile:    python git_utils_script.py sync --filename "git_utils_script.py" --git_path "C:\Users\nkara\Downloads\GitCode" --target_subdir "Utils"
 Delete from Utils: python git_utils_script.py delete --filename "file.txt" --git_path "C:\path\to\repo" --target_subdir "Utils"
