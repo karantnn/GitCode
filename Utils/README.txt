@@ -29,7 +29,20 @@ COMMANDS:
    python git_utils_script.py push --filename "myfile.txt" --source_dir "C:\source\folder" --git_path "C:\Users\nkara\OneDrive\Personal Documents\Narasimha Karanth Documents\GitVersion" --target_subdir "Utils"
 
 
-3. DELETE FILE FROM REPOSITORY
+3. CREATE NEW FILE AND PUSH TO REPOSITORY
+   Create a new file with content and push to git repository.
+   
+   Command:
+   python git_utils_script.py create --filename <FILE> --content <CONTENT> --git_path <REPO_PATH> [--target_subdir <SUBDIR>]
+   
+   Example (create in root):
+   python git_utils_script.py create --filename "newfile.txt" --content "Hello World" --git_path "C:\Users\nkara\Downloads\GitCode"
+   
+   Example (create in Utils subdirectory):
+   python git_utils_script.py create --filename "test.txt" --content "Test content" --git_path "C:\Users\nkara\Downloads\GitCode" --target_subdir "Utils"
+
+
+4. DELETE FILE FROM REPOSITORY
    Delete a specific file from a git repository and commit the changes.
    
    Command:
@@ -42,7 +55,7 @@ COMMANDS:
    python git_utils_script.py delete --filename "myfile.txt" --git_path "C:\Users\nkara\OneDrive\Personal Documents\Narasimha Karanth Documents\GitVersion" --target_subdir "Utils"
 
 
-4. SYNC FILE IN REPOSITORY
+5. SYNC FILE IN REPOSITORY
    Sync (commit and push) changes for a file already in the git repository.
    
    Command:
@@ -66,16 +79,18 @@ NOTES:
 ------
 - The script automatically creates subdirectories if they don't exist
 - Push operations commit files with message "Update <filename>"
+- Create operations commit files with message "Add <filename>"
 - Delete operations commit changes with message "Delete <filename>"
 - Sync operations commit changes with message "Sync <filename>"
 - The clone command will pull latest changes if repository already exists
-- Always use the local repository path (not GitHub URL) for push/delete/sync operations
+- Always use the local repository path (not GitHub URL) for push/create/delete/sync operations
 
 
 QUICK REFERENCE:
 ----------------
 Push to Utils:     python git_utils_script.py push --filename "file.txt" --source_dir "C:\source" --git_path "C:\path\to\repo" --target_subdir "Utils"
-Sync in Utils:     python git_utils_script.py sync --filename "git_utils_script.py" --git_path "C:\Users\nkara\Downloads\GitCode" --target_subdir "Utils"
+Create new file:   python git_utils_script.py create --filename "newfile.txt" --content "File content here" --git_path "C:\Users\nkara\Downloads\GitCode" --target_subdir "Utils"
+Update GitFile:    python git_utils_script.py sync --filename "git_utils_script.py" --git_path "C:\Users\nkara\Downloads\GitCode" --target_subdir "Utils"
 Delete from Utils: python git_utils_script.py delete --filename "file.txt" --git_path "C:\path\to\repo" --target_subdir "Utils"
 Delete Testfile:   python git_utils_script.py delete --filename "Testfile.txt" --git_path "C:\Users\nkara\Downloads\GitCode"
 Delete root file:  python git_utils_script.py delete --filename "git_utils_script.py" --git_path "C:\Users\nkara\Downloads\GitCode"
