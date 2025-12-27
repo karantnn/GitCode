@@ -152,10 +152,38 @@ def git_push_folder(source_folder, dest_folder, git_repo_path):
         # Determine destination path
         dest_path = os.path.join(git_repo_path, dest_folder)
         
+        # Define ignore patterns (exclude .git folders)
+        def ignore_patterns(directory, files):
+            return [f for f in files if f == '.git' or f == '__pycache__' or f.endswith('.pyc')]
+        
         # Copy folder contents
         if os.path.exists(dest_path):
-            shutil.rmtree(dest_path)
-        shutil.copytree(source_folder, dest_path)
+            # Remove existing files/folders except .git
+            for item in os.listdir(dest_path):
+                if item == '.git':
+                    continue
+                item_path = os.path.join(dest_path, item)
+                try:
+                    if os.path.isfile(item_path) or os.path.islink(item_path):
+                        os.unlink(item_path)
+                    elif os.path.isdir(item_path):
+                        shutil.rmtree(item_path)
+                except Exception as e:
+                    print(f"Warning: Could not remove {item_path}: {e}")
+            
+            # Copy new contents
+            for item in os.listdir(source_folder):
+                if item == '.git' or item == '__pycache__' or item.endswith('.pyc'):
+                    continue
+                source_item = os.path.join(source_folder, item)
+                dest_item = os.path.join(dest_path, item)
+                if os.path.isdir(source_item):
+                    shutil.copytree(source_item, dest_item, ignore=ignore_patterns)
+                else:
+                    shutil.copy2(source_item, dest_item)
+        else:
+            shutil.copytree(source_folder, dest_path, ignore=ignore_patterns)
+        
         print(f"Copied folder '{source_folder}' to '{dest_path}'")
         
         # Git add
