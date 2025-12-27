@@ -1,0 +1,542 @@
+
+Using environment variables:
+ALPHA_VANTAGE_API_KEY=9V6JB8887DCVTTSL
+OPENAI_API_KEY=your-openai-api-key-here
+
++------------------------- Welcome to TradingAgents --------------------------+
+|                                                                             |
+|                                                                             |
+|    ______               ___             ___                    __           |
+|   /_  __/________ _____/ (_)___  ____ _/   | ____ ____  ____  / /______     |
+|    / / / ___/ __ `/ __  / / __ \/ __ `/ /| |/ __ `/ _ \/ __ \/ __/ ___/     |
+|   / / / /  / /_/ / /_/ / / / / / /_/ / ___ / /_/ /  __/ / / / /_(__  )      |
+|  /_/ /_/   \__,_/\__,_/_/_/ /_/\__, /_/  |_\__, /\___/_/ /_/\__/____/       |
+|                               /____/      /____/                            |
+|                                                                             |
+|  TradingAgents: Multi-Agents LLM Financial Trading Framework - CLI          |
+|                                                                             |
+|  Workflow Steps:                                                            |
+|  +--------------------- Traceback (most recent call last) ---------------------+
+| C:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\cli\main.py: |
+| 1105 in analyze                                                             |
+|                                                                             |
+|   1102                                                                      |
+|   1103 @app.command()                                                       |
+|   1104 def analyze():                                                       |
+| > 1105     run_analysis()                                                   |
+|   1106                                                                      |
+|   1107                                                                      |
+|   1108 if __name__ == "__main__":                                           |
+|                                                                             |
+| C:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\cli\main.py: |
+| 740 in run_analysis                                                         |
+|                                                                             |
+|    737                                                                      |
+|    738 def run_analysis():                                                  |
+|    739     # First get all user selections                                  |
+| >  740     selections = get_user_selections()                               |
+|    741                                                                      |
+|    742     # Create config with selected research depth                     |
+|    743     config = DEFAULT_CONFIG.copy()                                   |
+|                                                                             |
+| C:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\cli\main.py: |
+| 421 in get_user_selections                                                  |
+|                                                                             |
+|    418         title="Welcome to TradingAgents",                            |
+|    419         subtitle="Multi-Agents LLM Financial Trading Framework",     |
+|    420     )                                                                |
+| >  421     console.print(Align.center(welcome_box))                         |
+|    422     console.print()  # Add a blank line after the welcome box        |
+|    423                                                                      |
+|    424     # Create a boxed questionnaire for each step                     |
+|                                                                             |
+| +-------------------------------- locals ---------------------------------+ |
+| |               f = <_io.TextIOWrapper name='./cli/static/welcome.txt'    | |
+| |                   mode='r' encoding='cp1252'>                           | |
+| |   welcome_ascii = '\n  ______               ___             ___         | |
+| |                   __      \n /_  __/'+347                               | |
+| |     welcome_box = <rich.panel.Panel object at 0x0000016F44F712B0>       | |
+| | welcome_content = '\n  ______               ___             ___         | |
+| |                   __      \n /_  __/'+640                               | |
+| +-------------------------------------------------------------------------+ |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\console.py:1697 in print                                   |
+|                                                                             |
+|   1694                 overflow = "ignore"                                  |
+|   1695             crop = False                                             |
+|   1696         render_hooks = self._render_hooks[:]                         |
+| > 1697         with self:                                                   |
+|   1698             renderables = self._collect_renderables(                 |
+|   1699                 objects,                                             |
+|   1700                 sep,                                                 |
+|                                                                             |
+| +-------------------------------- locals ---------------------------------+ |
+| |  buffer_extend = <built-in method extend of list object at              | |
+| |                  0x0000016F44964740>                                    | |
+| |           crop = True                                                   | |
+| |          emoji = None                                                   | |
+| |            end = '\n'                                                   | |
+| |         extend = <built-in method extend of list object at              | |
+| |                  0x0000016F44F03F40>                                    | |
+| |         height = None                                                   | |
+| |      highlight = None                                                   | |
+| |        justify = None                                                   | |
+| |           line = [                                                      | |
+| |                      Segment(                                           | |
+| |                          '+-',                                          | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '--------------',                              | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          ' Multi-Agents LLM Financial Trading Framework | |
+| |                  ',                                                     | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '---------------',                             | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '-+',                                          | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment('\n')                                      | |
+| |                  ]                                                      | |
+| |         markup = None                                                   | |
+| | new_line_start = False                                                  | |
+| |   new_segments = [                                                      | |
+| |                      Segment(                                           | |
+| |                          '+-',                                          | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '------------------------',                    | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          ' Welcome to TradingAgents ',                  | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '-------------------------',                   | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '-+',                                          | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment('\n'),                                     | |
+| |                      Segment(                                           | |
+| |                          '|',                                           | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '                                              | |
+| |                  ',                                                     | |
+| |                          Style()                                        | |
+| |                      ),                                                 | |
+| |                      Segment(                                           | |
+| |                          '|',                                           | |
+| |                          Style(                                         | |
+| |                              color=Color(                               | |
+| |                                  'green',                               | |
+| |                                  ColorType.STANDARD,                    | |
+| |                                  number=2                               | |
+| |                              )                                          | |
+| |                          )                                              | |
+| |                      ),                                                 | |
+| |                      Segment('\n'),                                     | |
+| |                      ... +110                                           | |
+| |                  ]                                                      | |
+| |        no_wrap = None                                                   | |
+| |        objects = (                                                      | |
+| |                      Align(<rich.panel.Panel object at                  | |
+| |                  0x0000016F44F712B0>, 'center'),                        | |
+| |                  )                                                      | |
+| |       overflow = None                                                   | |
+| |         render = <bound method Console.render of <console width=79      | |
+| |                  None>>                                                 | |
+| |   render_hooks = []                                                     | |
+| | render_options = ConsoleOptions(                                        | |
+| |                      size=ConsoleDimensions(width=79, height=25),       | |
+| |                      legacy_windows=True,                               | |
+| |                      min_width=1,                                       | |
+| |                      max_width=79,                                      | |
+| |                      is_terminal=False,                                 | |
+| |                      encoding='cp1252',                                 | |
+| |                      max_height=25,                                     | |
+| |                      justify=None,                                      | |
+| |                      overflow=None,                                     | |
+| |                      no_wrap=None,                                      | |
+| |                      highlight=None,                                    | |
+| |                      markup=None,                                       | |
+| |                      height=None                                        | |
+| |                  )                                                      | |
+| |     renderable = Align(<rich.panel.Panel object at 0x0000016F44F712B0>, | |
+| |                  'center')                                              | |
+| |    renderables = [                                                      | |
+| |                      Align(<rich.panel.Panel object at                  | |
+| |                  0x0000016F44F712B0>, 'center')                         | |
+| |                  ]                                                      | |
+| |           self = <console width=79 None>                                | |
+| |            sep = ' '                                                    | |
+| |      soft_wrap = False                                                  | |
+| |          style = None                                                   | |
+| |          width = None                                                   | |
+| +-------------------------------------------------------------------------+ |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\console.py:870 in __exit__                                 |
+|                                                                             |
+|    867                                                                      |
+|    868     def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any |
+|    869         """Exit buffer context."""                                   |
+| >  870         self._exit_buffer()                                          |
+|    871                                                                      |
+|    872     def begin_capture(self) -> None:                                 |
+|    873         """Begin capturing console output. Call :meth:`end_capture`  |
+|                                                                             |
+| +-------------- locals ---------------+                                     |
+| |  exc_type = None                    |                                     |
+| | exc_value = None                    |                                     |
+| |      self = <console width=79 None> |                                     |
+| | traceback = None                    |                                     |
+| +-------------------------------------+                                     |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\console.py:826 in _exit_buffer                             |
+|                                                                             |
+|    823     def _exit_buffer(self) -> None:                                  |
+|    824         """Leave buffer context, and render content if required."""  |
+|    825         self._buffer_index -= 1                                      |
+| >  826         self._check_buffer()                                         |
+|    827                                                                      |
+|    828     def set_live(self, live: "Live") -> bool:                        |
+|    829         """Set Live instance. Used by Live context manager (no need  |
+|                                                                             |
+| +------------ locals ------------+                                          |
+| | self = <console width=79 None> |                                          |
+| +--------------------------------+                                          |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\console.py:2038 in _check_buffer                           |
+|                                                                             |
+|   2035             return                                                   |
+|   2036                                                                      |
+|   2037         try:                                                         |
+| > 2038             self._write_buffer()                                     |
+|   2039         except BrokenPipeError:                                      |
+|   2040             self.on_broken_pipe()                                    |
+|   2041                                                                      |
+|                                                                             |
+| +------------ locals ------------+                                          |
+| | self = <console width=79 None> |                                          |
+| +--------------------------------+                                          |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\console.py:2074 in _write_buffer                           |
+|                                                                             |
+|   2071                             if self.no_color and self._color_system: |
+|   2072                                 buffer = list(Segment.remove_color(b |
+|   2073                                                                      |
+| > 2074                             legacy_windows_render(buffer, LegacyWind |
+|   2075                         else:                                        |
+|   2076                             # Either a non-std stream on legacy Wind |
+|   2077                             text = self._render_buffer(self._buffer[ |
+|                                                                             |
+| +-------------------------------- locals ---------------------------------+ |
+| |                    buffer = [                                           | |
+| |                                 Segment(                                | |
+| |                                     '+-',                               | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment(                                | |
+| |                                     '------------------------',         | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment(                                | |
+| |                                     ' Welcome to TradingAgents ',       | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment(                                | |
+| |                                     '-------------------------',        | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment(                                | |
+| |                                     '-+',                               | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment('\n'),                          | |
+| |                                 Segment(                                | |
+| |                                     '|',                                | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment(                                | |
+| |                                     '                                   | |
+| |                             ',                                          | |
+| |                                     Style()                             | |
+| |                                 ),                                      | |
+| |                                 Segment(                                | |
+| |                                     '|',                                | |
+| |                                     Style(                              | |
+| |                                         color=Color(                    | |
+| |                                             'green',                    | |
+| |                                             ColorType.STANDARD,         | |
+| |                                             number=2                    | |
+| |                                         )                               | |
+| |                                     )                                   | |
+| |                                 ),                                      | |
+| |                                 Segment('\n'),                          | |
+| |                                 ... +110                                | |
+| |                             ]                                           | |
+| |                    fileno = 1                                           | |
+| |                      self = <console width=79 None>                     | |
+| | use_legacy_windows_render = True                                        | |
+| +-------------------------------------------------------------------------+ |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\_windows_renderer.py:19 in legacy_windows_render           |
+|                                                                             |
+|   16             if style:                                                  |
+|   17                 term.write_styled(text, style)                         |
+|   18             else:                                                      |
+| > 19                 term.write_text(text)                                  |
+|   20         else:                                                          |
+|   21             control_codes: Sequence[ControlCode] = control             |
+|   22             for control_code in control_codes:                         |
+|                                                                             |
+| +-------------------------------- locals ---------------------------------+ |
+| |  buffer = [                                                             | |
+| |               Segment(                                                  | |
+| |                   '+-',                                                 | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment(                                                  | |
+| |                   '------------------------',                           | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment(                                                  | |
+| |                   ' Welcome to TradingAgents ',                         | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment(                                                  | |
+| |                   '-------------------------',                          | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment(                                                  | |
+| |                   '-+',                                                 | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment('\n'),                                            | |
+| |               Segment(                                                  | |
+| |                   '|',                                                  | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment(                                                  | |
+| |                   '                                                     | |
+| |           ',                                                            | |
+| |                   Style()                                               | |
+| |               ),                                                        | |
+| |               Segment(                                                  | |
+| |                   '|',                                                  | |
+| |                   Style(                                                | |
+| |                       color=Color(                                      | |
+| |                           'green',                                      | |
+| |                           ColorType.STANDARD,                           | |
+| |                           number=2                                      | |
+| |                       )                                                 | |
+| |                   )                                                     | |
+| |               ),                                                        | |
+| |               Segment('\n'),                                            | |
+| |               ... +110                                                  | |
+| |           ]                                                             | |
+| | control = None                                                          | |
+| |   style = Style()                                                       | |
+| |    term = <rich._win32_console.LegacyWindowsTerm object at              | |
+| |           0x0000016F44F71550>                                           | |
+| |    text = 'I. Analyst Team \u2192 II. Research Team \u2192 III. Trader \u2192 IV. Risk | |
+| |           Management \u2192'                                                 | |
+| +-------------------------------------------------------------------------+ |
+|                                                                             |
+| c:\Users\nkara\Downloads\TradingAgents-main\TradingAgents-main\.venv\Lib\si |
+| te-packages\rich\_win32_console.py:402 in write_text                        |
+|                                                                             |
+|   399         Args:                                                         |
+|   400             text (str): The text to write to the console              |
+|   401         """                                                           |
+| > 402         self.write(text)                                              |
+|   403         self.flush()                                                  |
+|   404                                                                       |
+|   405     def write_styled(self, text: str, style: Style) -> None:          |
+|                                                                             |
+| +-------------------------------- locals ---------------------------------+ |
+| | self = <rich._win32_console.LegacyWindowsTerm object at                 | |
+| |        0x0000016F44F71550>                                              | |
+| | text = 'I. Analyst Team \u2192 II. Research Team \u2192 III. Trader \u2192 IV. Risk    | |
+| |        Management \u2192'                                                    | |
+| +-------------------------------------------------------------------------+ |
+|                                                                             |
+| C:\Program                                                                  |
+| Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.2544.0_x64__qbz |
+| 5n2kfra8p0\Lib\encodings\cp1252.py:19 in encode                             |
+|                                                                             |
+|    16                                                                       |
+|    17 class IncrementalEncoder(codecs.IncrementalEncoder):                  |
+|    18     def encode(self, input, final=False):                             |
+| >  19         return codecs.charmap_encode(input,self.errors,encoding_table |
+|    20                                                                       |
+|    21 class IncrementalDecoder(codecs.IncrementalDecoder):                  |
+|    22     def decode(self, input, final=False):                             |
+|                                                                             |
+| +-------------------------------- locals ---------------------------------+ |
+| | final = False                                                           | |
+| | input = 'I. Analyst Team \u2192 II. Research Team \u2192 III. Trader \u2192 IV. Risk   | |
+| |         Management \u2192'                                                   | |
+| |  self = <encodings.cp1252.IncrementalEncoder object at                  | |
+| |         0x0000016F26D14AD0>                                             | |
+| +-------------------------------------------------------------------------+ |
++-----------------------------------------------------------------------------+
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position
+16: character maps to <undefined>
